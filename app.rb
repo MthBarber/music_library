@@ -25,19 +25,20 @@ class Application < Sinatra::Base
 
   get '/albums' do
     repo = AlbumRepository.new
-    return repo.all
+    @albums = repo.all
+    return erb(:all_albums)
   end
+# This GET METHOD IS REWRITTEN BELOW TO CARRY OUT A DIFFERENT FUNCTION
+  # get '/artists' do
+  #   repo = ArtistRepository.new
+  #   array = repo.all
+  #   artists = []
+  #   array.each do |artist|
+  #       artists << artist.name
+  #   end
 
-  get '/artists' do
-    repo = ArtistRepository.new
-    array = repo.all
-    artists = []
-    array.each do |artist|
-        artists << artist.name
-    end
-
-    return artists.join(", ")
-  end
+  #   return artists.join(", ")
+  # end
 
   post '/artists' do
     repo = ArtistRepository.new
@@ -45,5 +46,28 @@ class Application < Sinatra::Base
     artist.name = params['name']
     artist.genre = params['genre']
     repo.create(artist)
+  end
+
+  get '/album/:id' do
+    id = params[:id]
+    repo = AlbumRepository.new
+    artist_repo = ArtistRepository.new    
+    @album = repo.find(id)
+    @artist = artist_repo.find(@album.artist_id)
+
+    return erb(:album_find)
+  end
+
+  get '/artists/:id' do
+    id = params[:id]
+    repo = ArtistRepository.new
+    @artist = repo.find(id)
+    return erb(:artist_page)
+  end
+
+  get '/artists' do
+    repo = ArtistRepository.new
+    @artists = repo.all
+    return erb(:artists_page)
   end
 end
